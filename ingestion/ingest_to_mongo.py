@@ -18,8 +18,8 @@ minio_client = Minio(
 bucket_name = os.getenv("MINIO_BUCKET")
 
 # MongoDB config
-mongo_client = MongoClient("mongodb://localhost:27017/")
-db = mongo_client["olist"]
+mongo_client = MongoClient(os.getenv("MONGO_URI"))
+db = mongo_client[os.getenv("MONGO_DB")]
 collection = db["raw_data"]
 
 # Files

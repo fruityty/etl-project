@@ -16,6 +16,16 @@ with DAG(
     tags=["etl", "spark"],
 ) as dag:
 
+    ingest_minio = BashOperator(
+    task_id="ingest_datalake",
+        bash_command="python /opt/airflow/ingestion/ingest_to_minio.py"
+    )
+
+    ingest_mongodb = BashOperator(
+        task_id="ingest_bronze",
+        bash_command="python /opt/airflow/ingestion/ingest_to_mongo.py"
+    )
+
     transform = BashOperator(
         task_id="transform_silver",
         bash_command="python /opt/airflow/spark_jobs/transform.py"
@@ -26,4 +36,4 @@ with DAG(
         bash_command="python /opt/airflow/spark_jobs/aggregate.py"
     )
 
-    transform >> aggregate
+    ingest_minio >> ingest_mongodb >> transform >> aggregate

@@ -23,7 +23,8 @@ client = Minio(
 if not client.bucket_exists(bucket_name):
     client.make_bucket(bucket_name)
 
-data_path = "../olist_dataset"
+# data_path = "../olist_dataset"
+data_path = "/opt/airflow/olist_dataset" #for air flow
 
 files = [
     "olist_orders_dataset.csv",
@@ -32,6 +33,8 @@ files = [
     "olist_products_dataset.csv",
     "olist_order_payments_dataset.csv"
 ]
+
+print(os.curdir)
 
 for file in files:
     file_path = os.path.join(data_path, file)

@@ -45,6 +45,8 @@ services:
     volumes:
       - ./dags:/opt/airflow/dags
       - ./spark_jobs:/opt/airflow/spark_jobs
+      - ./ingestion:/opt/airflow/ingestion
+      - ./olist_dataset:/opt/airflow/olist_dataset
       - ./.env:/opt/airflow/.env
     command: >
       bash -c "airflow db init &&
