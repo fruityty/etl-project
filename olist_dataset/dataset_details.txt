@@ -1,0 +1,12 @@
+File	Use
+olist_orders_dataset.csv	main table
+olist_order_items_dataset.csv	order-product
+olist_products_dataset.csv	product info
+olist_customers_dataset.csv	customer info
+olist_order_payments_dataset.csv	payment
+
+olist_order_reviews_dataset.csv	sentiment/reviews
+olist_sellers_dataset.csv	seller analysis
+olist_geolocation_dataset.csv	location analysis
+
+product_category_name_translation.csv category-english
