@@ -29,6 +29,10 @@ spark = SparkSession.builder \
     .config("spark.mongodb.read.connection.uri", mongo_connection) \
     .config("spark.mongodb.write.connection.uri", mongo_connection) \
     \
+    .config("spark.hadoop.fs.s3a.connection.timeout", "60000") \
+    .config("spark.hadoop.fs.s3a.connection.establish.timeout", "5000") \
+    .config("spark.hadoop.fs.s3a.connection.maximum", "100") \
+    \
     .config("spark.hadoop.fs.s3a.endpoint", f"http://{minio_endpoint}") \
     .config("spark.hadoop.fs.s3a.access.key", minio_access_key) \
     .config("spark.hadoop.fs.s3a.secret.key", minio_secret_key) \
@@ -37,6 +41,39 @@ spark = SparkSession.builder \
     .config("spark.hadoop.fs.s3a.aws.credentials.provider",
             "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider") \
     .getOrCreate()
+
+# fix airflow 60s error override bad values
+conf = spark.sparkContext._jsc.hadoopConfiguration()
+conf.set("fs.s3a.endpoint", "http://minio:9000")  # use service name not localhost in Airflow/Docker
+conf.set("fs.s3a.access.key", minio_access_key)
+conf.set("fs.s3a.secret.key", minio_secret_key)
+conf.set("fs.s3a.path.style.access", "true")
+conf.set("fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
+conf.set("fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider")
+
+# Fix invalid string format values
+conf.set("fs.s3a.multipart.purge.age", "86400")   # 24h in seconds
+conf.set("fs.s3a.retry.interval", "500")           # ms as number
+conf.set("fs.s3a.retry.throttle.interval", "100")  # ms as number
+conf.set("fs.s3a.connection.ttl", "300000")        # 5m in milliseconds
+conf.set("fs.s3a.assumed.role.session.duration", "1800") # 30m in seconds
+
+# Fix SSL - MinIO uses plain HTTP
+conf.set("fs.s3a.connection.ssl.enabled", "false")
+conf.set("fs.s3a.connection.timeout", "60000") 
+conf.set("fs.s3a.connection.establish.timeout", "5000") 
+conf.set("fs.s3a.connection.maximum", "100")
+conf.set("fs.s3a.threads.keepalivetime", "60")
+
+# debug
+# Dump all s3a related configs
+# from py4j.java_gateway import java_import
+# java_import(spark._jvm, "java.util.Map")
+# iterator = conf.iterator()
+# while iterator.hasNext():
+#     entry = iterator.next()
+#     if "s3a" in entry.getKey():
+#         print(f"{entry.getKey()} = {entry.getValue()}")
 
 # Define Schema
 orders_schema = StructType([

@@ -30,6 +30,28 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  airflow:
+    build: .
+    container_name: airflow
+    restart: always
+    env_file: .env
+    ports:
+      - "8080:8080"
+    environment:
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: ${AIRFLOW_DB}
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY}
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./spark_jobs:/opt/airflow/spark_jobs
+      - ./.env:/opt/airflow/.env
+    command: >
+      bash -c "airflow db init &&
+      airflow users create --username $$AIRFLOW_USER --password $$AIRFLOW_PASSWORD --firstname Admin --lastname User --role Admin --email $$AIRFLOW_EMAIL &&
+      airflow scheduler &
+      exec airflow webserver"
+
 volumes:
   mongo_data:
   postgres_data:
