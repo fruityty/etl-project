@@ -1,0 +1,7 @@
+| Service                 | URL                           | Purpose              |
+| ----------------------- | ----------------------------- | -------------------- |
+| Apache Airflow          | `http://localhost:8080`       | DAG orchestration UI |
+| MinIO Console           | `http://localhost:9001`       | MinIO web UI         |
+| MinIO API (S3 endpoint) | `http://localhost:9000`       | S3-compatible API    |
+| MongoDB                 | `mongodb://localhost:27017`   | Raw data storage     |
+| PostgreSQL              | `postgresql://localhost:5432` | Data warehouse       |
