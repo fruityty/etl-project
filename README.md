@@ -1,4 +1,5 @@
 # etl-project
+![alt text](assets/medallion_architecture.png)
 ![alt text](assets/overall_project.png)
 
                 +-------------------+
