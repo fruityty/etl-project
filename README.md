@@ -8,13 +8,13 @@
                           |
                           v
                 +-------------------+
-                |  MinIO (Bronze)   |
+                |  MinIO (DataLake) |
                 |   Raw CSV Layer   |
                 +-------------------+
                           |
                           v
                 +-------------------+
-                |     MongoDB       |
+                |  MongoDB (Bronze) |
                 |   Raw Data Store  |
                 +-------------------+
                           |
@@ -39,7 +39,7 @@
                           v
                 +-------------------+
                 |   PostgreSQL      |
-                |    Gold Layer     |
+                |   (Gold Layer)    |
                 +-------------------+
                           |
                           v
