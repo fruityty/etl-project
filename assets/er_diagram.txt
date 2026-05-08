@@ -1,0 +1,43 @@
++-------------------+
+|      Orders       |
++-------------------+
+| PK order_id       |
+| FK customer_id    |
+| order_purchase_ts |
++-------------------+
+          |
+          | customer_id
+          v
++-------------------+
+|     Customers     |
++-------------------+
+| PK customer_id    |
+| customer_city     |
+| customer_state    |
++-------------------+
+
+
++-------------------+
+|    Order_Items    |
++-------------------+
+| FK order_id       |
+| FK product_id     |
+| price             |
++-------------------+
+          |
+          | product_id
+          v
++-------------------------+
+|        Products         |
++-------------------------+
+| PK product_id           |
+| product_category_name   |
++-------------------------+
+
+
++-------------------+
+|     Payments      |
++-------------------+
+| FK order_id       |
+| payment_value     |
++-------------------+
