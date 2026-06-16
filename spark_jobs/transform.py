@@ -1,6 +1,6 @@
 from pyspark.sql import SparkSession
 from dotenv import load_dotenv
-from pyspark.sql.types import StructType, StructField, StringType, DoubleType
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType, LongType
 import os
 from pyspark.sql.functions import col, to_timestamp, sum
 
@@ -79,11 +79,13 @@ conf.set("fs.s3a.threads.keepalivetime", "60")
 orders_schema = StructType([
     StructField("order_id", StringType(), True),
     StructField("customer_id", StringType(), True),
+    StructField("order_status", StringType(), True),
     StructField("order_purchase_timestamp", StringType(), True),
 ])
 
 order_items_schema = StructType([
     StructField("order_id", StringType(), True),
+    StructField("order_item_id", LongType(), True),
     StructField("product_id", StringType(), True),
     StructField("price", DoubleType(), True),
 ])
@@ -101,6 +103,7 @@ customers_schema = StructType([
 
 payments_schema = StructType([
     StructField("order_id", StringType(), True),
+    StructField("payment_type", StringType(), True),
     StructField("payment_value", DoubleType(), True),
 ])
 
@@ -131,22 +134,15 @@ payments = spark.read.format("mongodb") \
     .load()
 
 # Select columns
-orders = orders.select("order_id", "customer_id", "order_purchase_timestamp")
-order_items = order_items.select("order_id", "product_id", "price")
+orders = orders.select("order_id", "customer_id", "order_status", "order_purchase_timestamp")
+order_items = order_items.select("order_id", "order_item_id", "product_id", "price")
 products = products.select("product_id", "product_category_name")
 customers = customers.select("customer_id", "customer_city", "customer_state")
-payments = payments.select("order_id", "payment_value")
+payments = payments.select("order_id", "payment_type", "payment_value")
 
-# Aggregate payment
-payments_agg = payments.groupBy("order_id") \
+# Aggregate payments by order and payment type
+payments_agg = payments.groupBy("order_id", "payment_type") \
     .agg(sum("payment_value").alias("payment_value"))
-
-# Join tables
-df = orders \
-    .join(order_items, "order_id") \
-    .join(products, "product_id") \
-    .join(customers, "customer_id") \
-    .join(payments_agg, "order_id")
 
 # Transform
 df_clean = orders \

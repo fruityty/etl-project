@@ -49,10 +49,10 @@ services:
       - ./olist_dataset:/opt/airflow/olist_dataset
       - ./.env:/opt/airflow/.env
     command: >
-      bash -c "airflow db init &&
-      airflow users create --username $$AIRFLOW_USER --password $$AIRFLOW_PASSWORD --firstname Admin --lastname User --role Admin --email $$AIRFLOW_EMAIL &&
-      airflow scheduler &
-      exec airflow webserver"
+      bash -c "airflow db migrate &&
+      (airflow users create --username $$AIRFLOW_USER --password $$AIRFLOW_PASSWORD --firstname Admin --lastname User --role Admin --email $$AIRFLOW_EMAIL || true) &&
+      { airflow scheduler &
+      exec airflow webserver; }"
 
 volumes:
   mongo_data:
