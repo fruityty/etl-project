@@ -83,18 +83,19 @@ The Airflow DAG is defined in `dags/etl_pipeline.py` and runs these tasks in ord
 3. `transform_silver`
 4. `aggregate_gold`
 
-## Gold Output
+## Gold Tables
 
-The final table is written to PostgreSQL:
+The gold layer now writes multiple PostgreSQL tables:
 
-```sql
-revenue_by_state (
-    customer_state TEXT,
-    total_revenue FLOAT
-)
-```
+| Table | Grain | Purpose |
+| --- | --- | --- |
+| `revenue_by_state` | Customer state | Total payment revenue by state |
+| `monthly_revenue` | Order month | Monthly revenue trend and order count |
+| `top_product_categories` | Product category | Product revenue, item count, and order count |
+| `orders_by_status` | Order status | Order count and revenue by order status |
+| `customer_state_summary` | Customer state | Customer count, order count, and revenue by state |
+| `payment_type_summary` | Payment type | Order count and payment value by payment method |
 
-This table contains total payment revenue grouped by Brazilian customer state.
 
 ## Local Services
 
